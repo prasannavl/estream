@@ -5,11 +5,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/prasannavl/go-grab/lifecycle"
+
 	"net/http"
 	"os"
-
-	"os/signal"
-	"syscall"
 
 	"io/ioutil"
 
@@ -80,10 +79,10 @@ func run(addr string, pipeInOut bool) {
 		Handler: mux,
 	}
 
-	setExitHandler(func() {
+	lifecycle.CreateShutdownHandler(func() {
 		es.Close()
 		httpServer.Shutdown(context.Background())
-	})
+	}, lifecycle.ShutdownSignals...)
 
 	go runMessageProcessor(es, pipeInOut)
 
@@ -95,21 +94,6 @@ func run(addr string, pipeInOut bool) {
 	}
 
 	log.Info("exit")
-}
-
-func setExitHandler(handler func()) {
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
-
-	go func() {
-		for sig := range quit {
-			log.Infof("signal: %v", sig)
-			log.Info("shutting down..")
-			if handler != nil {
-				handler()
-			}
-		}
-	}()
 }
 
 func runMessageProcessor(es eventsource.EventSource, pipeInOut bool) {
