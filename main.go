@@ -105,7 +105,9 @@ func setExitHandler(handler func()) {
 		for sig := range quit {
 			log.Infof("signal: %v", sig)
 			log.Info("shutting down..")
-			handler()
+			if handler != nil {
+				handler()
+			}
 		}
 	}()
 }
