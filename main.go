@@ -39,14 +39,14 @@ func main() {
 		"the 'host:port' for the service to listen on")
 	flag.Parse()
 
-	lmeta := logc.LogInstanceMeta{}
+	logInitResult := logc.LogInitResult{}
 	if !logDisabled {
-		lopts := logc.DefaultOptions()
+		logOpts := logc.DefaultOptions()
 		if logFile != "" {
-			lopts.LogFile = logFile
+			logOpts.LogFile = logFile
 		}
-		lopts.VerbosityLevel = verbosity
-		logc.Init(&lopts, &lmeta)
+		logOpts.VerbosityLevel = verbosity
+		logc.Init(&logOpts, &logInitResult)
 	}
 
 	log.Infof("listen address: %q", addr)
