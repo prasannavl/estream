@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/prasannavl/go-grab/lifecycle"
+	"github.com/prasannavl/go-gluons/appx"
 
 	"net/http"
 	"os"
@@ -13,8 +13,8 @@ import (
 	"io/ioutil"
 
 	"github.com/antage/eventsource"
-	log "github.com/prasannavl/go-grab/log"
-	logc "github.com/prasannavl/go-grab/log-config"
+	log "github.com/prasannavl/go-gluons/log"
+	logc "github.com/prasannavl/go-gluons/logconfig"
 	flag "github.com/spf13/pflag"
 )
 
@@ -79,10 +79,10 @@ func run(addr string, pipeInOut bool) {
 		Handler: mux,
 	}
 
-	lifecycle.CreateShutdownHandler(func() {
+	appx.CreateShutdownHandler(func() {
 		es.Close()
 		httpServer.Shutdown(context.Background())
-	}, lifecycle.ShutdownSignals...)
+	}, appx.ShutdownSignals...)
 
 	go runMessageProcessor(es, pipeInOut)
 
